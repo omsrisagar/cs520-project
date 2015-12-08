@@ -23,6 +23,9 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
     self.k = 1 # this is the smoothing parameter, ** use it in your train method **
     self.automaticTuning = False # Look at this flag to decide whether to choose k automatically ** use this in your train method **
     
+    #Viet added - Conditional Proabilities.
+    self.P = util.Counter()
+    
   def setSmoothing(self, k):
     """
     This is used by the main method to change the smoothing parameter before training.
@@ -61,8 +64,48 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
     """
 
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
-        
+    # util.raiseNotDefined()
+    print "Begin define train and tune..."
+    # print self.features        
+    # print self.legalLabels
+
+    c = util.Counter()
+    k_res = util.Counter()
+    for index in range(len(trainingData)):
+      datum = trainingData[index];
+      label = trainingLabels[index];
+      for key in datum.sortedKeys():
+        if(datum[key]==1):
+          c[(1,key,label)] += 1
+        else: 
+          c[(0,key,label)] += 1
+    
+    # Conditional Probabilities
+    for k in kgrid:
+      print "k = ", k
+      for feature in self.features:
+        for label in self.legalLabels:
+          S = c[(1, feature, label)] + k + c[(0, feature, label)] + k
+          self.P[(1, feature, label)] = (c[(1, feature, label)] + k) / S
+          self.P[(0, feature, label)] = (c[(0, feature, label)] + k) / S 
+      
+      # calculate the accuracy 
+      guesses = self.classify(validationData)
+      correct = [guesses[i] == validationLabels[i] for i in range(len(validationLabels))].count(True)
+      k_res[k] = 100.0 * correct / len(validationLabels)
+      print k_res[k]
+
+    # Evalute and choose the otimum k 
+    print k_res
+    k = k_res.sortedKeys()[0]
+
+    # Reassign conditional probabilities 
+    for feature in self.features:
+      for label in self.legalLabels:
+        S = c[(1, feature, label)] + k + c[(0, feature, label)] + k
+        self.P[(1, feature, label)] = (c[(1, feature, label)] + k) / S
+        self.P[(0, feature, label)] = (c[(0, feature, label)] + k) / S 
+
   def classify(self, testData):
     """
     Classify the data based on the posterior distribution over labels.
@@ -89,7 +132,14 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
     logJoint = util.Counter()
     
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # util.raiseNotDefined()
+
+    for feature in self.features:
+      for label in self.legalLabels: 
+        if(datum[feature]==1):
+          logJoint[label] += math.log(self.P[(1, feature, label)])
+        else:
+          logJoint[label] += math.log(self.P[(0, feature, label)])    
     
     return logJoint
   
@@ -103,10 +153,17 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
     featuresOdds = []
        
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # util.raiseNotDefined()
 
+    temp = util.Counter()
+    for feature in self.features:
+      temp[feature] = self.P[(1,feature, label1)] / self.P[(1,feature, label2)]
+
+    featuresOdds = temp.sortedKeys()[0:99]
     return featuresOdds
     
 
     
       
+
+
