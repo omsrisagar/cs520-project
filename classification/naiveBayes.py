@@ -86,8 +86,8 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
       for feature in self.features:
         for label in self.legalLabels:
           S = c[(1, feature, label)] + k + c[(0, feature, label)] + k
-          self.P[(1, feature, label)] = (c[(1, feature, label)] + k) / S
-          self.P[(0, feature, label)] = (c[(0, feature, label)] + k) / S 
+          self.P[(1, feature, label)] = (c[(1, feature, label)] + k) / (S * 1.0)
+          self.P[(0, feature, label)] = (c[(0, feature, label)] + k) / (S * 1.0)
       
       # calculate the accuracy 
       guesses = self.classify(validationData)
