@@ -48,4 +48,6 @@
 - You can add code to the `analysis` method in `dataClassifier.py` to
   explore the mistakes that your classifier is making (optional)
 
-- 
+- The method `calculateLogJoinProbabilities` uses the conditional
+  probability tables constructed by `trainAndTune` to compute the log
+  posterior probability of each label given a feature vector. 

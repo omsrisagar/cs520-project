@@ -206,7 +206,7 @@ class Counter(dict):
     if total == 0: return
     for key in self.keys():
       self[key] = self[key] / total
-      
+
   def divideAll(self, divisor):
     """
     Divides all counts by divisor

@@ -55,7 +55,77 @@ class MiraClassifier:
     representing a vector of values.
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    #util.raiseNotDefined()
+    print "Begin train and tune..."
+    
+    c_res = util.Counter()
+    for C in Cgrid:
+      # reset weights 
+      for label in self.legalLabels:
+        self.weights[label] = util.Counter()
+
+      for iteration in range(self.max_iterations):
+        for i in range(len(trainingData)):
+          datum = trainingData[i]
+          correctLabel = trainingLabels[i]
+          score = util.Counter()
+          for l in self.legalLabels:
+            score[l] += datum * self.weights[l]
+
+          predictedLabel = score.sortedKeys()[0]
+          if predictedLabel != correctLabel:
+            # calculate tau 
+            temp = ((self.weights[predictedLabel] - self.weights[correctLabel]) * datum + 1) / (2.0 * self.calculateSumSquare(datum) )
+            tau = min(C, temp)
+            temp = self.multiplyAll(datum, tau)
+            self.weights[correctLabel] += temp
+            self.weights[predictedLabel] -= temp
+          
+      # calculate the accuracy 
+      guesses = self.classify(validationData)
+      correct = [guesses[i] == validationLabels[i] for i in range(len(validationLabels))].count(True)
+      c_res[C] = 100.0 * correct / len(validationLabels)
+      print c_res[C]
+          
+    # Evaluate and choose the optimum C 
+    print c_res 
+    self.C = c_res.sortedKeys()[0]
+    print "Set C to: ", self.C 
+
+    # Recalculate with the new C 
+    for label in self.legalLabels:
+      self.weights[label] = util.Counter()
+
+    for iteration in range(self.max_iterations):
+      for i in range(len(trainingData)):
+        datum = trainingData[i]
+        correctLabel = trainingLabels[i]
+        score = util.Counter()
+        for l in self.legalLabels:
+          score[l] += datum * self.weights[l]
+
+        predictedLabel = score.sortedKeys()[0]
+        if predictedLabel != correctLabel:
+          # calculate tau 
+          temp = ((self.weights[predictedLabel] - self.weights[correctLabel]) * datum + 1) / (2.0 * self.calculateSumSquare(datum) )
+          tau = min(self.C, temp)
+          temp = self.multiplyAll(datum, tau)
+          self.weights[correctLabel] += temp
+          self.weights[predictedLabel] -= temp
+    
+
+  def multiplyAll(self, datum, a):
+    a = float(a)
+    res = util.Counter()
+    for key in datum.sortedKeys():
+      res[key] = datum[key] * a
+    return res
+
+  def calculateSumSquare(self, datum):
+    res = 0;
+    for key in datum.sortedKeys():
+      res += datum[key] * datum[key]
+    return res
 
   def classify(self, data ):
     """
