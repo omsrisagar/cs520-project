@@ -85,7 +85,7 @@ class MiraClassifier:
       guesses = self.classify(validationData)
       correct = [guesses[i] == validationLabels[i] for i in range(len(validationLabels))].count(True)
       c_res[C] = 100.0 * correct / len(validationLabels)
-      print c_res[C]
+      print "For C = ", C, "validation accuracy = ", c_res[C], "%"
           
     # Evaluate and choose the optimum C 
     print c_res 
@@ -152,6 +152,7 @@ class MiraClassifier:
     featuresOdds = []
 
     "*** YOUR CODE HERE ***"
+    featuresOdds += (self.weights[label1] - self.weights[label2]).sortedKeys()[0:99]
 
     return featuresOdds
 

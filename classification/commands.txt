@@ -8,3 +8,16 @@ python dataClassifier.py -c mira --autotune
 python dataClassifier.py -d digits -c naiveBayes -f -a -t 1000  
 python dataClassifier.py -d digits -c minicontest
 python runMinicontest.py
+
+-- Viet added --
+-- Naive Bayes
+python dataClassifier.py -c naiveBayes -a -d digits -t 1000 -s 1000
+python dataClassifier.py -c naiveBayes -a -d faces -t 450 -s 150
+
+-- Perceptron
+python dataClassifier.py -c perceptron -a -d digits -t 1000 -s 1000
+python dataClassifier.py -c perceptron -a -d faces -t 450 -s 150
+
+-- mira 
+python dataClassifier.py -c mira -a -d digits -t 1000 -s 1000
+python dataClassifier.py -c mira -a -d faces -t 450 -s 150

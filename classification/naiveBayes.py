@@ -77,15 +77,18 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
       for key in datum.sortedKeys():
         if(datum[key]==1):
           c[(1,key,label)] += 1
+        elif (datum[key]==2):
+          c[(2,key,label)] += 1
         else: 
           c[(0,key,label)] += 1
     
     # Conditional Probabilities
     for k in kgrid:
-      print "k = ", k
+      print "Set k = ", k
       for feature in self.features:
         for label in self.legalLabels:
-          S = c[(1, feature, label)] + k + c[(0, feature, label)] + k
+          S = c[(1, feature, label)] + k + c[(0, feature, label)] + k + c[(2, feature, label)] + k
+          self.P[(2, feature, label)] = (c[(2, feature, label)] + k) / (S * 1.0)
           self.P[(1, feature, label)] = (c[(1, feature, label)] + k) / (S * 1.0)
           self.P[(0, feature, label)] = (c[(0, feature, label)] + k) / (S * 1.0)
       
@@ -93,18 +96,23 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
       guesses = self.classify(validationData)
       correct = [guesses[i] == validationLabels[i] for i in range(len(validationLabels))].count(True)
       k_res[k] = 100.0 * correct / len(validationLabels)
-      print k_res[k]
+      print "Accuracy = ", k_res[k], "%"
 
     # Evalute and choose the otimum k 
     print k_res
     k = k_res.sortedKeys()[0]
+    print "Set k = ", k 
 
     # Reassign conditional probabilities 
     for feature in self.features:
       for label in self.legalLabels:
-        S = c[(1, feature, label)] + k + c[(0, feature, label)] + k
-        self.P[(1, feature, label)] = (c[(1, feature, label)] + k) / S
-        self.P[(0, feature, label)] = (c[(0, feature, label)] + k) / S 
+        # S = c[(1, feature, label)] + k + c[(0, feature, label)] + k + c[(2, feature, label)] + k
+        # self.P[(2, feature, label)] = (c[(2, feature, label)] + k) / S
+        # self.P[(1, feature, label)] = (c[(1, feature, label)] + k) / S
+        # self.P[(0, feature, label)] = (c[(0, feature, label)] + k) / S 
+        S = c[(1, feature, label)] + k + c[(0, feature, label)] + k 
+        self.P[(1, feature, label)] = (c[(1, feature, label)] + k) / (S * 1.0)
+        self.P[(0, feature, label)] = (c[(0, feature, label)] + k) / (S * 1.0)
 
   def classify(self, testData):
     """
@@ -136,10 +144,16 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
 
     for feature in self.features:
       for label in self.legalLabels: 
+        # if(datum[feature]==2):
+        #   logJoint[label] += math.log(self.P[(2, feature, label)])
+        # elif(datum[feature]==1):
+        #   logJoint[label] += math.log(self.P[(1, feature, label)])
+        # else:
+        #   logJoint[label] += math.log(self.P[(0, feature, label)])   
         if(datum[feature]==1):
           logJoint[label] += math.log(self.P[(1, feature, label)])
         else:
-          logJoint[label] += math.log(self.P[(0, feature, label)])    
+          logJoint[label] += math.log(self.P[(0, feature, label)])   
     
     return logJoint
   

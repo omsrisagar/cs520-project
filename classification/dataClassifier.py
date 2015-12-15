@@ -70,7 +70,11 @@ def enhancedFeatureExtractorDigit(datum):
   features =  basicFeatureExtractorDigit(datum)
 
   "*** YOUR CODE HERE ***"
-  
+  for x in range(DIGIT_DATUM_WIDTH):
+    for y in range(DIGIT_DATUM_HEIGHT):
+      if datum.getPixel(x,y) == 2:
+        features[(x,y)] = 2 
+
   return features
 
 
@@ -325,7 +329,7 @@ def runClassifier(args, options):
   guesses = classifier.classify(testData)
   correct = [guesses[i] == testLabels[i] for i in range(len(testLabels))].count(True)
   print str(correct), ("correct out of " + str(len(testLabels)) + " (%.1f%%).") % (100.0 * correct / len(testLabels))
-  analysis(classifier, guesses, testLabels, testData, rawTestData, printImage)
+  # analysis(classifier, guesses, testLabels, testData, rawTestData, printImage)
   
   # do odds ratio computation if specified at command line
   if((options.odds) & (options.classifier == "naiveBayes" or (options.classifier == "nb")) ):
