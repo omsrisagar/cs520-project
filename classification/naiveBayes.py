@@ -77,8 +77,8 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
       for key in datum.sortedKeys():
         if(datum[key]==1):
           c[(1,key,label)] += 1
-        elif (datum[key]==2):
-          c[(2,key,label)] += 1
+        # elif (datum[key]==2):
+        #   c[(2,key,label)] += 1
         else: 
           c[(0,key,label)] += 1
     
@@ -87,8 +87,11 @@ class NaiveBayesClassifier(classificationMethod.ClassificationMethod):
       print "Set k = ", k
       for feature in self.features:
         for label in self.legalLabels:
-          S = c[(1, feature, label)] + k + c[(0, feature, label)] + k + c[(2, feature, label)] + k
-          self.P[(2, feature, label)] = (c[(2, feature, label)] + k) / (S * 1.0)
+          # S = c[(1, feature, label)] + k + c[(0, feature, label)] + k + c[(2, feature, label)] + k
+          # self.P[(2, feature, label)] = (c[(2, feature, label)] + k) / (S * 1.0)
+          # self.P[(1, feature, label)] = (c[(1, feature, label)] + k) / (S * 1.0)
+          # self.P[(0, feature, label)] = (c[(0, feature, label)] + k) / (S * 1.0)
+          S = c[(1, feature, label)] + k + c[(0, feature, label)] + k
           self.P[(1, feature, label)] = (c[(1, feature, label)] + k) / (S * 1.0)
           self.P[(0, feature, label)] = (c[(0, feature, label)] + k) / (S * 1.0)
       
